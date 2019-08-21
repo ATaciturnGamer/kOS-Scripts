@@ -1,4 +1,4 @@
-RUNONCEPATH("lib/stage_lib").
+RUNONCEPATH("lib/lib_stage").
 
 function burnTime {
 	parameter dV.

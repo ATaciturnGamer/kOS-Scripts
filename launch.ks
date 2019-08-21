@@ -1,8 +1,8 @@
-RUNONCEPATH("lib/stage_lib").
+RUNONCEPATH("lib/lib_stage").
 
 function orbitEcc {
 	parameter mnv.
-	
+
 	add mnv.
 	local score is mnv:ORBIT:ECCENTRICITY.
 	remove mnv.
@@ -12,27 +12,27 @@ function orbitEcc {
 function incPrograde {
 	parameter mnv.
 	parameter step.
-	
+
 	local oldScore is orbitEcc(mnv).
 	local oldMnv is mnv.
-	
+
 	local newMnv is node(time:SECONDS+mnv:ETA,0,0,mnv:PROGRADE+step).
 	local newScore is orbitEcc(newMnv).
 	return newMnv.
-	
+
 }
 
 function hillClimbPrograde {
 	parameter utime.
-	
+
 	local l_mnv is node(utime,0,0,0).
 	local step is 1.
 	local bestScore is orbitEcc(l_mnv).
-	
+
 	local n_mnv is incPrograde(l_mnv,step).
 	local newScore is orbitEcc(n_mnv).
 	print bestScore+" "+newScore.
-	
+
 	until newScore>=bestScore and abs(step) = 1
 	{
 		if newScore<bestScore {
@@ -50,10 +50,10 @@ function hillClimbPrograde {
 		//print step+" "+ l_mnv:PROGRADE+" "+ n_mnv:PROGRADE.
 		//print bestScore+" "+newScore.
 	}
-	
+
 	print bestScore.
 	add l_mnv.
-	
+
 }
 
 
@@ -110,15 +110,7 @@ until runmode = 0 {
   }
 
   if not (runmode=1) {
-    list ENGINES in engine_list.
-    for eng in engine_list {
-      if eng:FLAMEOUT{
-        stage.
-        wait until STAGE:READY.
-        break.
-      }
-    }
-    PRINT "STAGE "+STAGE:NUMBER at (0,6+STAGE:NUMBER).
+    autoStage().
   }
 
   lock THROTTLE to thr_val.
