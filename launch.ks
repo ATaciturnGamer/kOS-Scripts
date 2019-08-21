@@ -1,13 +1,5 @@
 RUNONCEPATH("lib/lib_stage").
-
-function orbitEcc {
-	parameter mnv.
-
-	add mnv.
-	local score is mnv:ORBIT:ECCENTRICITY.
-	remove mnv.
-	return score.
-}
+RUNONCEPATH("lib/lib_mnv").
 
 function incPrograde {
 	parameter mnv.
@@ -52,7 +44,7 @@ function hillClimbPrograde {
 	}
 
 	print bestScore.
-	add l_mnv.
+	return l_mnv.
 
 }
 
@@ -88,7 +80,7 @@ until runmode = 0 {
     if SHIP:APOAPSIS>80000 {
 		set runmode to 4.
 		print "CALCULATING ORBIT VEL" at (0,0).
-		hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
+		add hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
     }
   }
   if runmode = 4 { //COAST to APOAPSIS
@@ -103,8 +95,10 @@ until runmode = 0 {
     set thr_val to 0.
 	if (ETA:APOAPSIS<ETA:PERIAPSIS) {
 		print "ROUNDING ORBIT       " at (0,0).
-		hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
-		RUNPATH("execMnv.ks").
+		set m to hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
+		add m.
+		execMnv(m).
+		remove m.
 		set runmode to 0.
 	}
   }
