@@ -1,7 +1,17 @@
 core:part:getmodule("kOSProcessor"):DOEVENT("Open Terminal").
 
-copypath("0:/lib/lib_stage.ks","1:/lib/lib_stage.ks").
-copypath("0:/lib/lib_vec.ks","1:/lib/lib_vec.ks").
-copypath("0:/launch.ks","1:/launch.ks").
-copypath("0:/execMnv.ks","1:/execMnv.ks").
-copypath("0:/pid_test1.ks","1:/pid_test1.ks").
+function download {
+    parameter fname.
+
+    IF NOT EXISTS(fname) AND HOMECONNECTION:ISCONNECTED {
+		COPYPATH("0:"+fname, "1:"+fname).
+		print "Downloading: "+fname.
+    }
+}
+download("lib/lib_stage.ks").
+download("lib/lib_vec.ks").
+download("lib/lib_mnv.ks").
+download("launch.ks").
+download("land.ks").
+download("execMnv.ks").
+download("pid_test1.ks").
