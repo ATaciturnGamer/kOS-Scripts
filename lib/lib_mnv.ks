@@ -56,7 +56,6 @@ function pidDescent {
 
 
 
-	stage.
 	set var_thr to 0.
 	lock THROTTLE to var_thr.
 
@@ -82,7 +81,12 @@ function hoverSlamHeight {
 
 	local grav is constant(): g * (body:mass / body:radius^2).
 	local max_dec is (SHIP:AVAILABLETHRUST / SHIP:MASS) - grav.
-	return SHIP:VERTICALSPEED^2 / (2*max_dec).
+	set stop_dist to SHIP:VERTICALSPEED^2 / (2*max_dec).
+	print stop_dist at (10,10).
+	print ALT:RADAR at (10,11).
+	print ROUND(MAX(0.001,((ALTITUDE-GEOPOSITION:TERRAINHEIGHT)-50)),3) at (10,12).
+
+	return stop_dist.//+(SHIP:GROUNDSPEED^2 / (2*AVAILABLETHRUST/MASS))^2).
 }
 
 function hoverSlam {
@@ -90,7 +94,7 @@ function hoverSlam {
 	wait until SHIP:VERTICALSPEED<0.
 	SAS off.
 	lock STEERING to SRFRETROGRADE.
-	wait until ALT:RADAR<(hoverSlamHeight()+300).
+	wait until getSurfHeight()<(hoverSlamHeight()+50).
 	until SHIP:VERTICALSPEED>-5 {
 		lock THROTTLE to 1.
 		wait 0.001.

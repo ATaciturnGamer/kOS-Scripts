@@ -1,3 +1,7 @@
+function getSurfHeight {
+	return ROUND(MAX(0.001,((ALTITUDE-GEOPOSITION:TERRAINHEIGHT)-50)),3).
+}
+
 function getSurfVelocity {
 
 	local sinYaw is sin(ship:up:yaw).

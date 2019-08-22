@@ -6,19 +6,19 @@ set dir to UP.
 lock STEERING to dir.
 wait 2.
 
-set Kp to 0.4.
-set Ki to 0.1.
-set Kd to 0.05.
+set Kp to 0.05.
+set Ki to 0.02.
+set Kd to 0.01.
 set min_o to 0.
 set max_o to 1. 
 
 set thr_pid to PIDLOOP(Kp,Ki,Kd,min_o,max_o).
 set thr_pid:SETPOINT to -5.
 
-set pitch_pid to PIDLOOP(5.0,0.00,0.01,-35,35).
+set pitch_pid to PIDLOOP(5.0,0.05,0.1,-35,35).
 set pitch_pid:SETPOINT to 0.
 
-set yaw_pid to PIDLOOP (5.0,0.00,0.01,-35,35).
+set yaw_pid to PIDLOOP (5.0,0.05,0.1,-35,35).
 set yaw_pid:SETPOINT to 0.
 
 
