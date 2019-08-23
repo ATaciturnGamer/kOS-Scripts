@@ -1,3 +1,14 @@
+function altAt {
+	parameter t.
+	
+	return ORBITAT(SHIP,t):BODY:ALTITUDEOF(POSITIONAT(SHIP,t)).
+}
+function gravAt {
+	parameter t.
+	
+	return body:mu / (altAt(t) + body:radius)^2.
+}
+
 function getBurnTime {
 	parameter dV.
 
@@ -14,8 +25,8 @@ function getBurnTime {
 		}
 	}
 
-	local g IS body:mu / (altitude + body:radius)^2.                 // Gravitational acceleration constant (m/s²)
-
+	local g IS 9.80665.//body:mu / (altitude + body:radius)^2.                 // Gravitational acceleration constant (m/s²)
+	
 	return g * m * p * (1 - e^(-dV/(g*p))) / f.
 }
 
@@ -38,7 +49,8 @@ function orbitVel {
 
 function hohmannVel {
     parameter r2.
-
+	
+	set r2 to r2+ORBIT:BODY:RADIUS.
     local r1 is ALTITUDE + ORBIT:BODY:RADIUS.
-    return sqrt(ORBIT:BODY:MU/(r1))*(sqrt(2*r2(r1+r2))-1).
+    return sqrt(ORBIT:BODY:MU/(r1))*(sqrt(2*r2/(r1+r2))-1).
 }

@@ -1,5 +1,6 @@
 RUNONCEPATH("lib/lib_vec").
 RUNONCEPATH("lib/lib_physics").
+RUNONCEPATH("lib/lib_stage").
 
 function isExecDone {
 	parameter mnv.
@@ -43,14 +44,15 @@ function execMnv {	//Execute a maneuver (time, rad, nor, pro)
 	lock THROTTLE to 0.
 	local l_mnv is mnv.
 
-	//print l_mnv:DELTAV:DIRECTION.
-	//print l_mnv:DELTAV:MAG.
+	local alt_mnv is altAt(TIME:SECONDS+mnv:ETA).
+	
 	local burn_time is getBurnTime(l_mnv:DELTAV:MAG).
 	modBurnTime(l_mnv:DELTAV:MAG).
 	//print "BURN: " + getBurnTime(l_mnv:DELTAV:MAG).
 	lock STEERING to l_mnv:DELTAV:DIRECTION.
-	wait 5.
+	wait 10.
 	local time_to_burn is time:SECONDS + l_mnv:ETA - burn_time/2.
+	
 	if (time:SECONDS < time_to_burn) {
 		kuniverse:TIMEWARP:WARPTO(time_to_burn).
 		wait until time:SECONDS >= time_to_burn.
@@ -63,11 +65,12 @@ function execMnv {	//Execute a maneuver (time, rad, nor, pro)
 	}
 	print "DONE".
 	delimitEng().
+	unlock STEERING.
 }
 
 function circulariseBurn {
 
-	local deltaV is orbitVel(ORBIT:APOAPSIS) - ORBIT:VELOCITY:ORBIT.
+	local deltaV is orbitVel(ORBIT:APOAPSIS) - VELOCITYAT(SHIP,TIME:SECONDS+ETA:APOAPSIS):ORBIT:MAG.
 
 	local l_mnv is NODE(time:SECONDS+ETA:APOAPSIS,0,0,deltaV).
 	add l_mnv.
@@ -139,7 +142,7 @@ function hoverSlam {
 	wait until SHIP:VERTICALSPEED<0.
 	SAS off.
 	lock STEERING to SRFRETROGRADE.
-	wait until getSurfHeight()<(hoverSlamHeight()+50).
+	wait until getSurfHeight()<(hoverSlamHeight()+0).
 	until SHIP:VERTICALSPEED>-5 {
 		lock THROTTLE to 1.
 		wait 0.001.
@@ -147,10 +150,10 @@ function hoverSlam {
 
 	GEAR ON.
 	lock THROTTLE to 0.
-	pidDescent(3).
+	pidDescent(1).
 }
 
-function hohmannTranferMnv {
+function hohmannTransferMnv {
 	parameter r.
 
 	until (ORBIT:APOAPSIS)*0.95<(ORBIT:PERIAPSIS) {
