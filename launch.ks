@@ -79,28 +79,33 @@ until runmode = 0 {
     set thr_val to 1.
     if SHIP:APOAPSIS>80000 {
 		set runmode to 4.
-		print "CALCULATING ORBIT VEL" at (0,0).
-		add hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
+		//print "CALCULATING ORBIT VEL" at (0,0).
+		//add hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
     }
   }
-  if runmode = 4 { //COAST to APOAPSIS
+  if runmode = 4 { //ENTERING ORBIT
     lock STEERING to SHIP:PROGRADE.
     set thr_val to 0.
     print "ENTERING ORBIT       " at (0,0).
-	RUNPATH("execMnv.ks").
+	circulariseBurn().
 	set runmode to 5.
   }
   if runmode = 5 { //ORBIT
     lock STEERING to heading(90,0).
     set thr_val to 0.
-	if (ETA:APOAPSIS<ETA:PERIAPSIS) {
+	if ((ORBIT:APOAPSIS-ORBIT:PERIAPSIS) > 5000) and ((ETA:APOAPSIS<ETA:PERIAPSIS) or (ORBIT:PERIAPSIS>70000)){
 		print "ROUNDING ORBIT       " at (0,0).
-		set m to hillClimbPrograde(time:SECONDS+ETA:APOAPSIS).
-		add m.
-		execMnv(m).
-		remove m.
-		set runmode to 0.
+		circulariseBurn().
+		print "LAUNCH SUCCESS       " at (0,0).
 	}
+	else if ((ORBIT:APOAPSIS-ORBIT:PERIAPSIS)<=5000){
+		print "LAUNCH SUCCESS       " at (0,0).
+	}
+	else {
+		print "LAUNCH FAILED        " at (0,0).
+		ABORT ON.
+	}
+	set runmode to 0.
   }
 
   if not (runmode=1) {

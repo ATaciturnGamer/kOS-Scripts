@@ -10,3 +10,7 @@ function autoStage {
     }
 	return false.
 }
+
+function stageDeltaV {
+	return stage:engine:isp * ln(ship:mass / (ship:mass - (stage:LIQUIDFUEL))).
+}
